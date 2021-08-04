@@ -40,9 +40,7 @@ namespace TwilioCallApp.Services.Services
                 room.Name = roomResource.UniqueName;
                 room.MaxParticipants = roomResource.MaxParticipants ?? 0;
                 room.token = GetTwilioJwt(identity);
-                var roomList = new RoomList();
-                roomList.list.Add(room);
-                response.data = roomList;
+                response.data = room;
                 response.success = 1;
             }
             catch (Exception)
@@ -56,11 +54,9 @@ namespace TwilioCallApp.Services.Services
         {
             var rooms = await RoomResource.ReadAsync();
             var tasks = rooms.Select(
-                room => GetRoomDetailsAsync(
-                    room,
-                    Twilio.Rest.Video.V1.Room.ParticipantResource.ReadAsync(
-                        room.Sid,
-                        Twilio.Rest.Video.V1.Room.ParticipantResource.StatusEnum.Connected)));
+                room => GetRoomDetailsAsync(room,
+                Twilio.Rest.Video.V1.Room.ParticipantResource.ReadAsync(room.Sid,
+                    Twilio.Rest.Video.V1.Room.ParticipantResource.StatusEnum.Connected)));
 
             return await Task.WhenAll(tasks);
 
